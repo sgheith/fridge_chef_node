@@ -1,13 +1,13 @@
 const openai = require('../config/openaiConfig')
 
-const createHealthyMeals = async (ingredients, kcal = 2000) => {
+const createHealthyMeals = async (req, res) => {
 
   system_role_content = "You are a talented cook."
 
   prompt = `Create a healthy daily meal plan for breakfast, lunch and dinner based on
-    the following ingredients ${ingredients}.
+    the following ingredients ${req.body.ingredients}.
     Explain each recipe.
-    The total daily intake of kcal should be below ${kcal}.
+    The total daily intake of kcal should be below ${req.body.kcal}.
     Assign a suggestive and concise title to each meal.
     Your answer should end with 'Titles: ' and an ordered list of the title of each recipe.`
 
@@ -50,7 +50,9 @@ const createHealthyMeals = async (ingredients, kcal = 2000) => {
 
   mealsList = await Promise.all(promises);
 
-  return mealsList
+  res.status(200).json({
+    meals: mealsList
+  })
 
 }
 
