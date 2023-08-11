@@ -8,4 +8,6 @@ const rl = readline.createInterface({
 })
 
 foods = 'broccoli, chicken, fish, vegetables, cabbage, eggs, olive oil'
-createHealthyMeals(foods)
+createHealthyMeals(foods).then(meals => {
+  console.log(meals)
+})

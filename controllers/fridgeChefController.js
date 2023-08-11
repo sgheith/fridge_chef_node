@@ -36,6 +36,39 @@ const createHealthyMeals = async (ingredients, kcal = 2000) => {
 
   //console.log(mealsList);
 
+  const promises = mealsList.map(meal => {
+    return createMealImage(meal['title'], 'White background')
+      .then(url => {
+        meal['url'] = url;
+        return meal;
+      })
+      .catch(err => {
+        console.error('Error creating meal image:', err);
+        return meal;  // or handle error as you see fit
+      });
+  });
+
+  mealsList = await Promise.all(promises);
+
+  return mealsList
+
+}
+
+const createMealImage = async (title, extra = '') => {
+
+  image_prompt = `${title}, ${extra}, high quality food photography`
+
+  const image = await openai.createImage({
+    prompt: image_prompt,
+    n: 1,
+    size: '1024x1024'
+  })
+
+  //console.log(image.data.data[0].url)
+
+  const imageUrl = image.data.data[0].url;
+
+  return imageUrl;
 }
 
 function extractMealTitles(meals) {
