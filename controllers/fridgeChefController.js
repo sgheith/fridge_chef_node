@@ -26,7 +26,61 @@ const createHealthyMeals = async (ingredients, kcal = 2000) => {
 
   meals = response.data.choices[0].message.content
 
-  console.log(meals)
+  //console.log(meals)
+
+  const titles = extractMealTitles(meals)
+
+  //console.log(titles);
+
+  mealsList = extractMeals(meals, titles)
+
+  //console.log(mealsList);
+
+}
+
+function extractMealTitles(meals) {
+  // Split the string into lines
+  const lines = meals.split('\n');
+
+  // Get the last three lines
+  const lastThreeLines = lines.slice(-3);
+
+  // Map over these lines, and use a regular expression to remove the leading number, dash or period, and space
+  const titles = lastThreeLines.map(line => line.replace(/^\d+\.\s*|^\d+\-\s*/, ''));
+
+  // Return the list of titles
+  return titles;
+}
+
+function extractMeals(inputString, titles) {
+  // Remove the titles section from the bottom
+  inputString = inputString.split('Titles:')[0];
+
+  const lines = inputString.split('\n');
+  const meals = [];
+  let currentMeal = null;
+
+  lines.forEach(line => {
+    const title = titles.find(t => line.includes(t));
+    if (title) {
+      if (currentMeal) {
+        meals.push(currentMeal);
+      }
+      currentMeal = {
+        title: title,
+        description: '',
+        url: '',
+      };
+    } else if (currentMeal) {
+      currentMeal.description += line + '\n';
+    }
+  });
+
+  if (currentMeal) {
+    meals.push(currentMeal);
+  }
+
+  return meals;
 }
 
 module.exports = { createHealthyMeals }
